@@ -1,5 +1,6 @@
 import React from "react";
 import FilterBadge from "./FilterBadge.jsx";
+import FilterBadgeB from "./FilterBadgeB.jsx";
 import FilterBadgeV2 from "./FilterBadgeV2.jsx";
 
 const C = {
@@ -76,6 +77,16 @@ export default function App() {
 
       <Option
         number="B"
+        title="Search to add"
+        bullets={[
+          "Derived from option A",
+        ]}
+      >
+        <FilterBadgeB />
+      </Option>
+
+      <Option
+        number="C"
         title="All names visible, confirm with Apply"
         bullets={[
           "All names are visible immediately. Scroll or search to find someone.",

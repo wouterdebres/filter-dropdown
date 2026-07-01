@@ -78,10 +78,10 @@ export default function App() {
         number="B"
         title="All names visible, confirm with Apply"
         bullets={[
-          "All names are visible immediately — scroll or search to find someone",
+          "All names are visible immediately. Scroll or search to find someone.",
           "Selecting a name clears the search and keeps you in the list",
           "Recently selected people move to the top the next time you open the dropdown",
-          "Changes are only applied when you click Apply — closing without it discards them",
+          "Changes only apply when you click Apply. Closing without it discards them.",
         ]}
       >
         <FilterBadgeV2 />

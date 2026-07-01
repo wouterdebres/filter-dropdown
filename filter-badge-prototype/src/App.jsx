@@ -17,18 +17,14 @@ function Option({ number, title, bullets, children }) {
       padding: 40,
       display: "flex", alignItems: "flex-start", gap: 40,
     }}>
-      {/* Left: option number */}
-      <div style={{ flex: "0 0 auto", paddingTop: 2 }}>
+      {/* Left: description */}
+      <div style={{ flex: "0 0 320px" }}>
         <div style={{
-          fontSize: 48, fontWeight: 900, color: C.ink,
-          letterSpacing: "-0.04em", lineHeight: 1, whiteSpace: "nowrap",
+          fontSize: 11, fontWeight: 700, letterSpacing: "0.08em",
+          textTransform: "uppercase", color: C.muted, marginBottom: 8,
         }}>
           Option {number}
         </div>
-      </div>
-
-      {/* Middle: description */}
-      <div style={{ flex: "0 0 280px" }}>
         <div style={{
           fontSize: 18, fontWeight: 700, color: C.ink,
           letterSpacing: "-0.02em", marginBottom: 10,
@@ -66,7 +62,7 @@ export default function App() {
       display: "flex", flexDirection: "column", gap: 40,
     }}>
       <Option
-        number={1}
+        number="A"
         title="Search to add"
         bullets={[
           "Shows scopes (Me, Direct Reports, Subordinates) by default",
@@ -79,7 +75,7 @@ export default function App() {
       </Option>
 
       <Option
-        number={2}
+        number="B"
         title="All names visible, confirm with Apply"
         bullets={[
           "All people visible in the list immediately — search to filter",

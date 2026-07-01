@@ -247,32 +247,7 @@ export default function FilterBadge() {
     .filter(Boolean);
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: C.pageBg,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        paddingTop: 80,
-        fontFamily:
-          '"Satoshi", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", Helvetica, Arial, sans-serif',
-      }}
-    >
-      <style>{`
-        .fb-panel { animation: fbPop .14s cubic-bezier(.2,.8,.3,1); transform-origin: top left; }
-        @keyframes fbPop { from { opacity: 0; transform: translateY(-4px) scale(.985); } to { opacity: 1; transform: none; } }
-        .fb-row:hover { background: ${C.rowHover}; }
-        .fb-row:focus-visible { outline: 2px solid ${C.check}; outline-offset: -2px; border-radius: 6px; }
-        .fb-badge:focus-visible { outline: 2px solid ${C.caret}; outline-offset: 2px; }
-        .fb-scroll::-webkit-scrollbar { width: 8px; }
-        .fb-scroll::-webkit-scrollbar-thumb { background: #D7DDE8; border-radius: 8px; }
-        .fb-search::placeholder { color: ${C.placeholder}; }
-        .fb-search:focus { border-color: ${C.check}; box-shadow: 0 0 0 3px rgba(62,91,245,.13); }
-        @media (prefers-reduced-motion: reduce) { .fb-panel { animation: none; } }
-      `}</style>
-
-      <div ref={wrapRef} style={{ position: "relative", width: 320 }}>
+    <div ref={wrapRef} style={{ position: "relative", width: 300 }}>
         {/* Badge */}
         <button
           type="button"
@@ -465,11 +440,6 @@ export default function FilterBadge() {
             </div>
           </div>
         )}
-      </div>
-
-      <p style={{ marginTop: 22, fontSize: 13, color: C.placeholder }}>
-        Click the badge to filter. Search for a name to add someone specific.
-      </p>
     </div>
   );
 }

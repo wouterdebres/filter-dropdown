@@ -387,7 +387,7 @@ export default function FilterBadge() {
                     <Row
                       key={p.id}
                       label={p.name}
-                      checked={selected.includes(p.id)}
+                      checked={anyone || selected.includes(p.id)}
                       onClick={() => togglePerson(p.id)}
                     />
                   ))
@@ -429,7 +429,7 @@ export default function FilterBadge() {
                         <Row
                           key={p.id}
                           label={p.name}
-                          checked={selected.includes(p.id)}
+                          checked={anyone || selected.includes(p.id)}
                           onClick={() => togglePerson(p.id)}
                         />
                       ))}

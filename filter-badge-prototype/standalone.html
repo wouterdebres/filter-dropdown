@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Submitted By — filter badge (standalone)</title>
+    <link
+      rel="stylesheet"
+      href="https://api.fontshare.com/v2/css?f[]=satoshi@500,700,900&display=swap"
+    />
+    <style>
+      * { box-sizing: border-box; }
+      html, body, #root { margin: 0; padding: 0; min-height: 100%; }
+      body { -webkit-font-smoothing: antialiased; }
+    </style>
+    <!-- React + Babel from CDN (internet connection required) -->
+    <script crossorigin src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel" data-presets="react">
+      const { useState, useRef, useEffect } = React;
+
+      const PEOPLE = [
+        { id: "maria", name: "Maria Chévario" },
+        { id: "marjorie", name: "Marjorie Black" },
+        { id: "martin", name: "Martin Brundle" },
+        { id: "marcus", name: "Marcus Reed" },
+        { id: "marina", name: "Marina Lopez" },
+        { id: "brian", name: "Brian Smith" },
+        { id: "catherine", name: "Catherine Lee" },
+        { id: "aisha", name: "Aisha Khan" },
+        { id: "tom", name: "Tom Becker" },
+      ];
+
+      const SCOPES = [
+        { key: "me", label: "Me" },
+        { key: "dr", label: "My Direct Reports" },
+        { key: "sub", label: "My Subordinates" },
+      ];
+
+      const C = {
+        pageBg: "#F3F6FB",
+        badgeText: "#2C5C70",
+        badgeBg: "#D9ECF5",
+        badgeBgHover: "#CEE6F2",
+        badgeBorder: "#C2DEEA",
+        caret: "#5C93A7",
+        check: "#3E5BF5",
+        ink: "#2F3A5C",
+        placeholder: "#9099AC",
+        searchIcon: "#566179",
+        border: "#E7EBF2",
+        divider: "#E9ECF2",
+        cardBorder: "#E8ECF3",
+        boxBorder: "#D3D9E3",
+        rowHover: "#F5F8FF",
+      };
+
+      function Svg({ size = 16, color = "currentColor", strokeWidth = 2, style, children }) {
+        return (
+          <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+            stroke={color} strokeWidth={strokeWidth} strokeLinecap="round"
+            strokeLinejoin="round" style={style} aria-hidden="true">
+            {children}
+          </svg>
+        );
+      }
+      const SearchIcon = (p) => (<Svg {...p}><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></Svg>);
+      const XIcon = (p) => (<Svg {...p}><path d="M18 6 6 18" /><path d="m6 6 12 12" /></Svg>);
+      const ChevronDownIcon = (p) => (<Svg {...p}><path d="m6 9 6 6 6-6" /></Svg>);
+      const CheckIcon = (p) => (<Svg {...p}><path d="M20 6 9 17l-5-5" /></Svg>);
+
+      function Box({ checked }) {
+        return (
+          <span style={{
+            width: 20, height: 20, borderRadius: 6,
+            border: `1.5px solid ${checked ? C.check : C.boxBorder}`,
+            background: checked ? C.check : "#fff",
+            display: "inline-flex", alignItems: "center", justifyContent: "center",
+            flex: "0 0 auto", transition: "background .12s ease, border-color .12s ease",
+          }}>
+            {checked && <CheckIcon size={13} strokeWidth={3.5} color="#fff" />}
+          </span>
+        );
+      }
+
+      function Row({ checked, label, onClick }) {
+        return (
+          <button type="button" className="fb-row" onClick={onClick} style={{
+            display: "flex", alignItems: "center", gap: 12, width: "100%",
+            padding: "10px 8px", border: "none", background: "transparent",
+            cursor: "pointer", textAlign: "left", font: "inherit",
+            color: C.ink, fontSize: 15, fontWeight: 500,
+          }}>
+            <Box checked={checked} />
+            <span style={{ lineHeight: 1.2 }}>{label}</span>
+          </button>
+        );
+      }
+
+      function FilterBadge() {
+        const [open, setOpen] = useState(false);
+        const [scopes, setScopes] = useState({ me: true, dr: true, sub: true });
+        const [selected, setSelected] = useState([]);
+        const [recents, setRecents] = useState([]);
+        const [query, setQuery] = useState("");
+
+        const wrapRef = useRef(null);
+        const searchRef = useRef(null);
+
+        const anyone =
+          scopes.me && scopes.dr && scopes.sub &&
+          recents.every((id) => selected.includes(id));
+        const nothing =
+          !scopes.me && !scopes.dr && !scopes.sub && selected.length === 0;
+
+        useEffect(() => {
+          function onDown(e) {
+            if (wrapRef.current && !wrapRef.current.contains(e.target)) setOpen(false);
+          }
+          function onKey(e) { if (e.key === "Escape") setOpen(false); }
+          document.addEventListener("mousedown", onDown);
+          document.addEventListener("keydown", onKey);
+          return () => {
+            document.removeEventListener("mousedown", onDown);
+            document.removeEventListener("keydown", onKey);
+          };
+        }, []);
+
+        useEffect(() => {
+          if (open) {
+            const t = setTimeout(() => searchRef.current && searchRef.current.focus(), 30);
+            return () => clearTimeout(t);
+          }
+          setQuery("");
+        }, [open]);
+
+        const name = (id) => (PEOPLE.find((p) => p.id === id) || {}).name || id;
+
+        function badgeLabel() {
+          if (anyone) return "Anyone";
+          if (nothing) return "None";
+          const parts = [];
+          SCOPES.forEach((s) => scopes[s.key] && parts.push(s.label));
+          selected.forEach((id) => parts.push(name(id)));
+          if (parts.length <= 2) return parts.join(", ");
+          return `${parts[0]}, ${parts[1]} +${parts.length - 2}`;
+        }
+
+        function clickAnyone() {
+          if (anyone) {
+            setScopes({ me: false, dr: false, sub: false });
+            setSelected([]);
+          } else {
+            setScopes({ me: true, dr: true, sub: true });
+            setSelected([...recents]);
+          }
+        }
+
+        function toggleScope(key) {
+          setScopes((prev) => ({ ...prev, [key]: !prev[key] }));
+        }
+
+        function togglePerson(id) {
+          if (selected.includes(id)) {
+            setSelected(selected.filter((x) => x !== id));
+            return;
+          }
+          setRecents((prev) => (prev.includes(id) ? prev : [...prev, id]));
+          if (anyone) {
+            setScopes({ me: false, dr: false, sub: false });
+            setSelected([id]);
+          } else {
+            setSelected([...selected, id]);
+          }
+        }
+
+        const q = query.trim().toLowerCase();
+        const searching = q.length > 0;
+        const results = PEOPLE.filter((p) => p.name.toLowerCase().includes(q));
+        const recentPeople = recents
+          .map((id) => PEOPLE.find((p) => p.id === id))
+          .filter(Boolean);
+
+        return (
+          <div style={{
+            minHeight: "100vh", background: C.pageBg, display: "flex",
+            flexDirection: "column", alignItems: "center", paddingTop: 80,
+            fontFamily: '"Satoshi", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", Helvetica, Arial, sans-serif',
+          }}>
+            <style>{`
+              .fb-panel { animation: fbPop .14s cubic-bezier(.2,.8,.3,1); transform-origin: top left; }
+              @keyframes fbPop { from { opacity: 0; transform: translateY(-4px) scale(.985); } to { opacity: 1; transform: none; } }
+              .fb-row:hover { background: ${C.rowHover}; }
+              .fb-row:focus-visible { outline: 2px solid ${C.check}; outline-offset: -2px; border-radius: 6px; }
+              .fb-badge:focus-visible { outline: 2px solid ${C.caret}; outline-offset: 2px; }
+              .fb-scroll::-webkit-scrollbar { width: 8px; }
+              .fb-scroll::-webkit-scrollbar-thumb { background: #D7DDE8; border-radius: 8px; }
+              .fb-search::placeholder { color: ${C.placeholder}; }
+              .fb-search:focus { border-color: ${C.check}; box-shadow: 0 0 0 3px rgba(62,91,245,.13); }
+              @media (prefers-reduced-motion: reduce) { .fb-panel { animation: none; } }
+            `}</style>
+
+            <div ref={wrapRef} style={{ position: "relative", width: 320 }}>
+              <button type="button" className="fb-badge" onClick={() => setOpen((o) => !o)} style={{
+                display: "inline-flex", alignItems: "center", gap: 8, maxWidth: "100%",
+                padding: "9px 16px", borderRadius: 999, border: `1px solid ${C.badgeBorder}`,
+                cursor: "pointer", background: open ? C.badgeBgHover : C.badgeBg,
+                color: C.badgeText, fontSize: 15, fontWeight: 700,
+                letterSpacing: "-0.01em", transition: "background .12s ease",
+              }}>
+                <span style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                  Submitted By: {badgeLabel()}
+                </span>
+                <ChevronDownIcon size={17} strokeWidth={2.75} color={C.caret} style={{
+                  flex: "0 0 auto", transition: "transform .15s ease",
+                  transform: open ? "rotate(180deg)" : "none",
+                }} />
+              </button>
+
+              {open && (
+                <div className="fb-panel" style={{
+                  position: "absolute", top: "calc(100% + 8px)", left: 0, width: 300,
+                  background: "#fff", border: `1px solid ${C.cardBorder}`, borderRadius: 12,
+                  boxShadow: "0 12px 32px rgba(28,42,74,.13), 0 3px 8px rgba(28,42,74,.05)",
+                  padding: 0, overflow: "hidden", zIndex: 10,
+                }}>
+                  <div style={{ padding: 8 }}>
+                    <div style={{ position: "relative" }}>
+                      <SearchIcon size={15} color={C.searchIcon} style={{
+                        position: "absolute", left: 12, top: "50%",
+                        transform: "translateY(-50%)", pointerEvents: "none",
+                      }} />
+                      <input ref={searchRef} className="fb-search" value={query}
+                        onChange={(e) => setQuery(e.target.value)} placeholder="Search" style={{
+                          width: "100%", height: 32, boxSizing: "border-box",
+                          padding: "0 30px 0 34px", borderRadius: 6,
+                          border: `1px solid ${C.border}`, fontSize: 14, lineHeight: "30px",
+                          color: C.ink, outline: "none", font: "inherit", fontWeight: 500,
+                        }} />
+                      {searching && (
+                        <button type="button" aria-label="Clear search"
+                          onClick={() => { setQuery(""); searchRef.current && searchRef.current.focus(); }}
+                          style={{
+                            position: "absolute", right: 5, top: "50%",
+                            transform: "translateY(-50%)", width: 22, height: 22, borderRadius: 6,
+                            border: "none", background: "transparent", cursor: "pointer",
+                            display: "grid", placeItems: "center", color: C.searchIcon,
+                          }}>
+                          <XIcon size={15} strokeWidth={2.5} />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  <div style={{ height: 1, background: C.divider }} />
+
+                  <div className="fb-scroll" style={{ maxHeight: 340, overflowY: "auto", padding: "6px 0 8px" }}>
+                    {searching ? (
+                      results.length ? (
+                        results.map((p) => (
+                          <Row key={p.id} label={p.name}
+                            checked={selected.includes(p.id)}
+                            onClick={() => togglePerson(p.id)} />
+                        ))
+                      ) : (
+                        <div style={{ padding: "12px 8px", fontSize: 14, color: C.placeholder }}>
+                          No people match “{query}”.
+                        </div>
+                      )
+                    ) : (
+                      <React.Fragment>
+                        <Row label="Anyone" checked={anyone} onClick={clickAnyone} />
+                        <div style={{ height: 1, background: C.divider, margin: "7px 0" }} />
+                        {SCOPES.map((s) => (
+                          <Row key={s.key} label={s.label}
+                            checked={scopes[s.key]} onClick={() => toggleScope(s.key)} />
+                        ))}
+                        {recentPeople.length > 0 && (
+                          <React.Fragment>
+                            <div style={{ height: 1, background: C.divider, margin: "7px 0" }} />
+                            {recentPeople.map((p) => (
+                              <Row key={p.id} label={p.name}
+                                checked={selected.includes(p.id)}
+                                onClick={() => togglePerson(p.id)} />
+                            ))}
+                          </React.Fragment>
+                        )}
+                      </React.Fragment>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <p style={{ marginTop: 22, fontSize: 13, color: C.placeholder }}>
+              Click the badge to filter. Search for a name to add someone specific.
+            </p>
+          </div>
+        );
+      }
+
+      ReactDOM.createRoot(document.getElementById("root")).render(<FilterBadge />);
+    </script>
+  </body>
+</html>

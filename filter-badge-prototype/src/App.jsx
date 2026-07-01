@@ -117,6 +117,12 @@ export default function App() {
       >
         <FilterBadgeV2 />
       </Option>
+
+      <div style={{ height: 600, display: "flex", alignItems: "flex-end", paddingBottom: 40 }}>
+        <p style={{ margin: 0, fontSize: 12, color: C.muted, opacity: 0.6 }}>
+          These prototypes are created by Wouter & Claude. Even though they are good friends, if you find a mistake it is entirely Claude's fault.
+        </p>
+      </div>
     </div>
   );
 }

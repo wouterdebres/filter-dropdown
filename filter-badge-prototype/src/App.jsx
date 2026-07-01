@@ -65,10 +65,10 @@ export default function App() {
         number="A"
         title="Search to add"
         bullets={[
-          "Defaults to Me, My Direct Reports, and My Subordinates — all selected",
+          "Defaults to Me, My Direct Reports, and My Subordinates, all selected",
           "Search to find and add a specific person to your filter",
           "Once added, a person stays visible in the list without searching again",
-          "Selections apply instantly — no confirm step needed",
+          "Selections apply instantly, no confirm step needed",
         ]}
       >
         <FilterBadge />

@@ -101,7 +101,8 @@ export default function FilterBadgeV2() {
 
   const pendingAnyone =
     pendingScopes.me && pendingScopes.dr && pendingScopes.sub &&
-    PEOPLE.every((p) => pendingSelected.includes(p.id));
+    PEOPLE.every((p) => pendingSelected.includes(p.id)) &&
+    pendingSelected.length === PEOPLE.length;
   const pendingNothing =
     !pendingScopes.me && !pendingScopes.dr && !pendingScopes.sub &&
     pendingSelected.length === 0;
@@ -177,7 +178,7 @@ export default function FilterBadgeV2() {
       setPendingSelected([]);
     } else {
       setPendingScopes({ me: true, dr: true, sub: true });
-      setPendingSelected([]);
+      setPendingSelected(PEOPLE.map((p) => p.id));
     }
   }
 

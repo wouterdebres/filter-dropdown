@@ -88,11 +88,12 @@ export default function FilterBadgeV2() {
   const [open, setOpen] = useState(false);
   const [scopes, setScopes] = useState(INITIAL_SCOPES);
   const [selected, setSelected] = useState(INITIAL_SELECTED);
+  const [recents, setRecents] = useState([]);
 
   // Pending state (what's shown in the open dropdown, not yet applied)
   const [pendingScopes, setPendingScopes] = useState(INITIAL_SCOPES);
   const [pendingSelected, setPendingSelected] = useState(INITIAL_SELECTED);
-  const [pendingRecents, setPendingRecents] = useState([]); // pick order for top-of-list
+  const [pendingRecents, setPendingRecents] = useState([]);
   const [query, setQuery] = useState("");
 
   const wrapRef = useRef(null);
@@ -113,9 +114,9 @@ export default function FilterBadgeV2() {
   useEffect(() => {
     function onDown(e) {
       if (wrapRef.current && !wrapRef.current.contains(e.target)) {
-        // Close without applying — reset pending to committed
         setPendingScopes(scopes);
         setPendingSelected(selected);
+        setPendingRecents(recents);
         setOpen(false);
       }
     }
@@ -123,6 +124,7 @@ export default function FilterBadgeV2() {
       if (e.key === "Escape") {
         setPendingScopes(scopes);
         setPendingSelected(selected);
+        setPendingRecents(recents);
         setOpen(false);
       }
     }
@@ -138,6 +140,7 @@ export default function FilterBadgeV2() {
   function openDropdown() {
     setPendingScopes(scopes);
     setPendingSelected(selected);
+    setPendingRecents(recents);
     setQuery("");
     setOpen(true);
     setTimeout(() => searchRef.current && searchRef.current.focus(), 30);
@@ -146,6 +149,7 @@ export default function FilterBadgeV2() {
   function apply() {
     setScopes(pendingScopes);
     setSelected(pendingSelected);
+    setRecents(pendingRecents);
     setOpen(false);
   }
 

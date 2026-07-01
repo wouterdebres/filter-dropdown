@@ -92,6 +92,7 @@ export default function FilterBadgeV2() {
   // Pending state (what's shown in the open dropdown, not yet applied)
   const [pendingScopes, setPendingScopes] = useState(INITIAL_SCOPES);
   const [pendingSelected, setPendingSelected] = useState(INITIAL_SELECTED);
+  const [pendingRecents, setPendingRecents] = useState([]); // pick order for top-of-list
   const [query, setQuery] = useState("");
 
   const wrapRef = useRef(null);
@@ -177,9 +178,15 @@ export default function FilterBadgeV2() {
   }
 
   function togglePerson(id) {
+    const isRemoving = pendingSelected.includes(id);
     setPendingSelected((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+      isRemoving ? prev.filter((x) => x !== id) : [...prev, id]
     );
+    if (!isRemoving) {
+      setPendingRecents((prev) => prev.includes(id) ? prev : [id, ...prev]);
+      setQuery("");
+      searchRef.current && searchRef.current.focus();
+    }
   }
 
   return (
@@ -268,6 +275,10 @@ export default function FilterBadgeV2() {
                   </div>
                 );
               }
+              const recentPeople = pendingRecents
+                .map((id) => PEOPLE.find((p) => p.id === id))
+                .filter(Boolean);
+              const restPeople = PEOPLE.filter((p) => !pendingRecents.includes(p.id));
               return (
                 <>
                   <Row label="Anyone" checked={pendingAnyone} onClick={clickAnyone} />
@@ -277,7 +288,12 @@ export default function FilterBadgeV2() {
                       checked={pendingScopes[s.key]} onClick={() => toggleScope(s.key)} />
                   ))}
                   <div style={{ height: 1, background: C.divider, margin: "7px 0" }} />
-                  {PEOPLE.map((p) => (
+                  {recentPeople.map((p) => (
+                    <Row key={p.id} label={p.name}
+                      checked={pendingSelected.includes(p.id)}
+                      onClick={() => togglePerson(p.id)} />
+                  ))}
+                  {restPeople.map((p) => (
                     <Row key={p.id} label={p.name}
                       checked={pendingSelected.includes(p.id)}
                       onClick={() => togglePerson(p.id)} />

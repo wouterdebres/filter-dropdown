@@ -9,12 +9,12 @@ const C = {
   divider: "#DDE3EE",
 };
 
-function Option({ number, title, bullets, children, borderBottom }) {
+function Option({ number, title, bullets, children }) {
   return (
     <div style={{
-      borderBottom: borderBottom ? `1px solid ${C.divider}` : "none",
-      paddingBottom: 64,
-      marginBottom: borderBottom ? 64 : 0,
+      background: "rgba(12,12,12,0.04)",
+      borderRadius: 12,
+      padding: 40,
       display: "flex", alignItems: "flex-start", gap: 80,
     }}>
       {/* Left: description */}
@@ -58,7 +58,8 @@ export default function App() {
       minHeight: "100vh",
       background: C.pageBg,
       fontFamily: '"Satoshi", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-      padding: "72px 48px",
+      padding: 40,
+      display: "flex", flexDirection: "column", gap: 40,
     }}>
       <Option
         number={1}
@@ -69,7 +70,6 @@ export default function App() {
           "Recently added people stay visible without searching again",
           "Changes apply immediately — no confirm step",
         ]}
-        borderBottom
       >
         <FilterBadge />
       </Option>

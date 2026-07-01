@@ -17,17 +17,21 @@ function Option({ number, title, bullets, children }) {
       padding: 40,
       display: "flex", alignItems: "flex-start", gap: 40,
     }}>
-      {/* Left: description */}
-      <div style={{ flex: "0 0 320px" }}>
+      {/* Left: option number */}
+      <div style={{ flex: "0 0 auto", paddingTop: 2 }}>
         <div style={{
-          fontSize: 11, fontWeight: 700, letterSpacing: "0.08em",
-          textTransform: "uppercase", color: C.muted, marginBottom: 8,
+          fontSize: 48, fontWeight: 900, color: C.ink,
+          letterSpacing: "-0.04em", lineHeight: 1, whiteSpace: "nowrap",
         }}>
           Option {number}
         </div>
+      </div>
+
+      {/* Middle: description */}
+      <div style={{ flex: "0 0 280px" }}>
         <div style={{
-          fontSize: 20, fontWeight: 700, color: C.ink,
-          letterSpacing: "-0.02em", marginBottom: 12,
+          fontSize: 18, fontWeight: 700, color: C.ink,
+          letterSpacing: "-0.02em", marginBottom: 10,
         }}>
           {title}
         </div>

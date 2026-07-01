@@ -149,7 +149,11 @@ export default function FilterBadgeV2() {
   function apply() {
     setScopes(pendingScopes);
     setSelected(pendingSelected);
-    setRecents(pendingRecents);
+    // Add newly selected people to the front of recents, preserve existing order
+    setRecents((prev) => {
+      const newlyAdded = pendingSelected.filter((id) => !prev.includes(id));
+      return [...newlyAdded, ...prev];
+    });
     setOpen(false);
   }
 
@@ -187,7 +191,6 @@ export default function FilterBadgeV2() {
       isRemoving ? prev.filter((x) => x !== id) : [...prev, id]
     );
     if (!isRemoving) {
-      setPendingRecents((prev) => prev.includes(id) ? prev : [id, ...prev]);
       setQuery("");
       searchRef.current && searchRef.current.focus();
     }

@@ -72,7 +72,7 @@ export default function App() {
         number={2}
         title="All names visible, confirm with Apply"
         bullets={[
-          "All people visible in the list immediately — no search needed",
+          "All people visible in the list immediately — search to filter",
           "Scroll within the dropdown to browse",
           "Sticky Apply button appears only when something changed",
           "Closing without Apply discards your changes",

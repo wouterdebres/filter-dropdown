@@ -27,6 +27,8 @@ const C = {
   check: "#3E5BF5",
   ink: "#2F3A5C",
   placeholder: "#9099AC",
+  searchIcon: "#566179",
+  border: "#E7EBF2",
   divider: "#E9ECF2",
   cardBorder: "#E8ECF3",
   boxBorder: "#D3D9E3",
@@ -44,6 +46,8 @@ function Svg({ size = 16, color = "currentColor", strokeWidth = 2, style, childr
 }
 const ChevronDownIcon = (p) => <Svg {...p}><path d="m6 9 6 6 6-6" /></Svg>;
 const CheckIcon = (p) => <Svg {...p}><path d="M20 6 9 17l-5-5" /></Svg>;
+const SearchIcon = (p) => <Svg {...p}><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></Svg>;
+const XIcon = (p) => <Svg {...p}><path d="M18 6 6 18" /><path d="m6 6 12 12" /></Svg>;
 
 function Box({ checked }) {
   return (
@@ -88,8 +92,10 @@ export default function FilterBadgeV2() {
   // Pending state (what's shown in the open dropdown, not yet applied)
   const [pendingScopes, setPendingScopes] = useState(INITIAL_SCOPES);
   const [pendingSelected, setPendingSelected] = useState(INITIAL_SELECTED);
+  const [query, setQuery] = useState("");
 
   const wrapRef = useRef(null);
+  const searchRef = useRef(null);
 
   const pendingAnyone =
     pendingScopes.me && pendingScopes.dr && pendingScopes.sub &&
@@ -131,7 +137,9 @@ export default function FilterBadgeV2() {
   function openDropdown() {
     setPendingScopes(scopes);
     setPendingSelected(selected);
+    setQuery("");
     setOpen(true);
+    setTimeout(() => searchRef.current && searchRef.current.focus(), 30);
   }
 
   function apply() {
@@ -184,6 +192,8 @@ export default function FilterBadgeV2() {
         .fb2-badge:focus-visible { outline: 2px solid ${C.caret}; outline-offset: 2px; }
         .fb2-scroll::-webkit-scrollbar { width: 8px; }
         .fb2-scroll::-webkit-scrollbar-thumb { background: #D7DDE8; border-radius: 8px; }
+        .fb2-search::placeholder { color: ${C.placeholder}; }
+        .fb2-search:focus { border-color: ${C.check}; box-shadow: 0 0 0 3px rgba(62,91,245,.13); }
         @media (prefers-reduced-motion: reduce) { .fb2-panel { animation: none; } }
       `}</style>
 
@@ -209,22 +219,72 @@ export default function FilterBadgeV2() {
           background: "#fff", border: `1px solid ${C.cardBorder}`, borderRadius: 12,
           boxShadow: "0 12px 32px rgba(28,42,74,.13), 0 3px 8px rgba(28,42,74,.05)",
           overflow: "hidden", zIndex: 10, display: "flex", flexDirection: "column",
-          maxHeight: 380,
+          maxHeight: 400,
         }}>
+          {/* Search */}
+          <div style={{ padding: 8, flexShrink: 0 }}>
+            <div style={{ position: "relative" }}>
+              <SearchIcon size={15} color={C.searchIcon} style={{
+                position: "absolute", left: 12, top: "50%",
+                transform: "translateY(-50%)", pointerEvents: "none",
+              }} />
+              <input ref={searchRef} className="fb2-search" value={query}
+                onChange={(e) => setQuery(e.target.value)} placeholder="Search"
+                style={{
+                  width: "100%", height: 32, boxSizing: "border-box",
+                  padding: "0 30px 0 34px", borderRadius: 6,
+                  border: `1px solid ${C.border}`, fontSize: 14,
+                  color: C.ink, outline: "none", font: "inherit", fontWeight: 500,
+                }} />
+              {query && (
+                <button type="button" aria-label="Clear search"
+                  onClick={() => { setQuery(""); searchRef.current && searchRef.current.focus(); }}
+                  style={{
+                    position: "absolute", right: 5, top: "50%",
+                    transform: "translateY(-50%)", width: 22, height: 22,
+                    border: "none", background: "transparent", cursor: "pointer",
+                    display: "grid", placeItems: "center", color: C.searchIcon,
+                  }}>
+                  <XIcon size={15} strokeWidth={2.5} />
+                </button>
+              )}
+            </div>
+          </div>
+          <div style={{ height: 1, background: C.divider, flexShrink: 0 }} />
+
           {/* Scrollable content */}
           <div className="fb2-scroll" style={{ overflowY: "auto", flex: 1, padding: "6px 0" }}>
-            <Row label="Anyone" checked={pendingAnyone} onClick={clickAnyone} />
-            <div style={{ height: 1, background: C.divider, margin: "7px 0" }} />
-            {SCOPES.map((s) => (
-              <Row key={s.key} label={s.label}
-                checked={pendingScopes[s.key]} onClick={() => toggleScope(s.key)} />
-            ))}
-            <div style={{ height: 1, background: C.divider, margin: "7px 0" }} />
-            {PEOPLE.map((p) => (
-              <Row key={p.id} label={p.name}
-                checked={pendingSelected.includes(p.id)}
-                onClick={() => togglePerson(p.id)} />
-            ))}
+            {(() => {
+              const q = query.trim().toLowerCase();
+              const filteredPeople = PEOPLE.filter((p) => p.name.toLowerCase().includes(q));
+              if (q) {
+                return filteredPeople.length ? filteredPeople.map((p) => (
+                  <Row key={p.id} label={p.name}
+                    checked={pendingSelected.includes(p.id)}
+                    onClick={() => togglePerson(p.id)} />
+                )) : (
+                  <div style={{ padding: "12px 8px", fontSize: 14, color: C.placeholder }}>
+                    No people match "{query}".
+                  </div>
+                );
+              }
+              return (
+                <>
+                  <Row label="Anyone" checked={pendingAnyone} onClick={clickAnyone} />
+                  <div style={{ height: 1, background: C.divider, margin: "7px 0" }} />
+                  {SCOPES.map((s) => (
+                    <Row key={s.key} label={s.label}
+                      checked={pendingScopes[s.key]} onClick={() => toggleScope(s.key)} />
+                  ))}
+                  <div style={{ height: 1, background: C.divider, margin: "7px 0" }} />
+                  {PEOPLE.map((p) => (
+                    <Row key={p.id} label={p.name}
+                      checked={pendingSelected.includes(p.id)}
+                      onClick={() => togglePerson(p.id)} />
+                  ))}
+                </>
+              );
+            })()}
           </div>
 
           {/* Sticky Apply footer */}

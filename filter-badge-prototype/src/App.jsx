@@ -15,8 +15,10 @@ function Option({ number, title, bullets, children, borderBottom }) {
       borderBottom: borderBottom ? `1px solid ${C.divider}` : "none",
       paddingBottom: 64,
       marginBottom: borderBottom ? 64 : 0,
+      display: "flex", alignItems: "flex-start", gap: 80,
     }}>
-      <div style={{ marginBottom: 32 }}>
+      {/* Left: description */}
+      <div style={{ flex: "1 1 0", minWidth: 0 }}>
         <div style={{
           fontSize: 11, fontWeight: 700, letterSpacing: "0.08em",
           textTransform: "uppercase", color: C.muted, marginBottom: 8,
@@ -41,7 +43,11 @@ function Option({ number, title, bullets, children, borderBottom }) {
           ))}
         </ul>
       </div>
-      {children}
+
+      {/* Right: dropdown */}
+      <div style={{ flexShrink: 0, paddingTop: 4 }}>
+        {children}
+      </div>
     </div>
   );
 }

@@ -149,18 +149,16 @@ function Row({ checked, label, onClick }) {
 export default function FilterBadgeB() {
   const [open, setOpen] = useState(false);
   const [scopes, setScopes] = useState({ me: true, dr: true, sub: true });
-  const [selected, setSelected] = useState([]); // person ids, in pick order
-  const [recents, setRecents] = useState([]); // person ids ever picked
+  const [selected, setSelected] = useState(PEOPLE.map((p) => p.id));
+  const [recents, setRecents] = useState([]);
   const [query, setQuery] = useState("");
 
   const wrapRef = useRef(null);
   const searchRef = useRef(null);
 
   const anyone =
-    scopes.me &&
-    scopes.dr &&
-    scopes.sub &&
-    recents.every((id) => selected.includes(id));
+    scopes.me && scopes.dr && scopes.sub &&
+    PEOPLE.every((p) => selected.includes(p.id));
   const nothing =
     !scopes.me && !scopes.dr && !scopes.sub && selected.length === 0;
 
@@ -215,9 +213,10 @@ export default function FilterBadgeB() {
     if (anyone) {
       setScopes({ me: false, dr: false, sub: false });
       setSelected([]);
+      setRecents([]);
     } else {
       setScopes({ me: true, dr: true, sub: true });
-      setSelected([...recents]);
+      setSelected(PEOPLE.map((p) => p.id));
     }
   }
 
@@ -227,17 +226,14 @@ export default function FilterBadgeB() {
 
   function togglePerson(id) {
     if (selected.includes(id)) {
+      if (anyone) setRecents(PEOPLE.map((p) => p.id));
       setSelected(selected.filter((x) => x !== id));
       setQuery("");
+      searchRef.current && searchRef.current.focus();
       return;
     }
     setRecents((prev) => (prev.includes(id) ? prev : [...prev, id]));
-    if (anyone) {
-      setScopes({ me: false, dr: false, sub: false });
-      setSelected([id]);
-    } else {
-      setSelected([...selected, id]);
-    }
+    setSelected([...selected, id]);
     setQuery("");
     searchRef.current && searchRef.current.focus();
   }
@@ -390,7 +386,7 @@ export default function FilterBadgeB() {
                     <Row
                       key={p.id}
                       label={p.name}
-                      checked={anyone || selected.includes(p.id)}
+                      checked={selected.includes(p.id)}
                       onClick={() => togglePerson(p.id)}
                     />
                   ))
@@ -432,7 +428,7 @@ export default function FilterBadgeB() {
                         <Row
                           key={p.id}
                           label={p.name}
-                          checked={anyone || selected.includes(p.id)}
+                          checked={selected.includes(p.id)}
                           onClick={() => togglePerson(p.id)}
                         />
                       ))}

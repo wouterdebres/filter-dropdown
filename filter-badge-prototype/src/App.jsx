@@ -62,6 +62,23 @@ export default function App() {
       padding: 40,
       display: "flex", flexDirection: "column", gap: 40,
     }}>
+      <div style={{ marginBottom: 8 }}>
+        <h1 style={{
+          margin: 0, fontSize: 28, fontWeight: 900, color: C.ink,
+          letterSpacing: "-0.03em",
+        }}>
+          Filter badge dropdown
+        </h1>
+        <p style={{
+          margin: "10px 0 0", fontSize: 13, color: C.muted, lineHeight: 1.6,
+          padding: "10px 14px", background: "rgba(245,180,0,0.1)",
+          border: "1px solid rgba(245,180,0,0.3)", borderRadius: 8,
+          display: "inline-block",
+        }}>
+          Note: the visual design in this prototype does not match our Kiln 2 styling. This page is about exploring the logic and functionality, not the final look and feel.
+        </p>
+      </div>
+
       <Option
         number="A"
         title="Search to add"

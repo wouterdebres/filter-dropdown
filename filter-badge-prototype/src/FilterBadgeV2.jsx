@@ -78,7 +78,7 @@ function Row({ checked, label, onClick }) {
 }
 
 const INITIAL_SCOPES = { me: true, dr: true, sub: true };
-const INITIAL_SELECTED = [];
+const INITIAL_SELECTED = PEOPLE.map((p) => p.id);
 
 function scopesEqual(a, b) {
   return a.me === b.me && a.dr === b.dr && a.sub === b.sub;
@@ -161,7 +161,7 @@ export default function FilterBadgeV2() {
   const name = (id) => (PEOPLE.find((p) => p.id === id) || {}).name || id;
 
   function badgeLabel() {
-    const anyone = scopes.me && scopes.dr && scopes.sub && selected.length === 0;
+    const anyone = scopes.me && scopes.dr && scopes.sub && PEOPLE.every((p) => selected.includes(p.id));
     const nothing = !scopes.me && !scopes.dr && !scopes.sub && selected.length === 0;
     if (anyone) return "Anyone";
     if (nothing) return "None";

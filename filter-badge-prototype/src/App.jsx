@@ -77,9 +77,12 @@ export default function App() {
 
       <Option
         number="B"
-        title="Search to add"
+        title="Search to add, jump back on select"
         bullets={[
-          "Derived from option A",
+          "Same as A, but selecting a person immediately clears the search",
+          "The dropdown jumps back to the default view with the person added at the bottom",
+          "Search again to add another person, each time returning to the default view",
+          "Changes apply instantly, no confirm step needed",
         ]}
       >
         <FilterBadgeB />

@@ -228,6 +228,7 @@ export default function FilterBadgeB() {
   function togglePerson(id) {
     if (selected.includes(id)) {
       setSelected(selected.filter((x) => x !== id));
+      setQuery("");
       return;
     }
     setRecents((prev) => (prev.includes(id) ? prev : [...prev, id]));
@@ -237,6 +238,8 @@ export default function FilterBadgeB() {
     } else {
       setSelected([...selected, id]);
     }
+    setQuery("");
+    searchRef.current && searchRef.current.focus();
   }
 
   const q = query.trim().toLowerCase();

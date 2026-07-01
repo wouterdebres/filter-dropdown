@@ -65,10 +65,10 @@ export default function App() {
         number="A"
         title="Search to add"
         bullets={[
-          "Shows scopes (Me, Direct Reports, Subordinates) by default",
-          "Search to find and add specific people",
-          "Recently added people stay visible without searching again",
-          "Changes apply immediately — no confirm step",
+          "Defaults to Me, My Direct Reports, and My Subordinates — all selected",
+          "Search to find and add a specific person to your filter",
+          "Once added, a person stays visible in the list without searching again",
+          "Selections apply instantly — no confirm step needed",
         ]}
       >
         <FilterBadge />
@@ -78,10 +78,10 @@ export default function App() {
         number="B"
         title="All names visible, confirm with Apply"
         bullets={[
-          "All people visible in the list immediately — search to filter",
-          "Scroll within the dropdown to browse",
-          "Sticky Apply button appears only when something changed",
-          "Closing without Apply discards your changes",
+          "All names are visible immediately — scroll or search to find someone",
+          "Selecting a name clears the search and keeps you in the list",
+          "Recently selected people move to the top the next time you open the dropdown",
+          "Changes are only applied when you click Apply — closing without it discards them",
         ]}
       >
         <FilterBadgeV2 />

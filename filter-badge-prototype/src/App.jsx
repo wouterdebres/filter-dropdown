@@ -15,10 +15,10 @@ function Option({ number, title, bullets, children }) {
       background: "rgba(12,12,12,0.04)",
       borderRadius: 12,
       padding: 40,
-      display: "flex", alignItems: "flex-start", gap: 80,
+      display: "flex", alignItems: "flex-start", gap: 40,
     }}>
       {/* Left: description */}
-      <div style={{ flex: "1 1 0", minWidth: 0 }}>
+      <div style={{ flex: "0 0 320px" }}>
         <div style={{
           fontSize: 11, fontWeight: 700, letterSpacing: "0.08em",
           textTransform: "uppercase", color: C.muted, marginBottom: 8,

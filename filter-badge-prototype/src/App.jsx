@@ -83,42 +83,28 @@ export default function App() {
       </div>
 
       <Option
-        number="F"
-        title="Search to add, jump back on select, confirm with Apply"
+        number="A"
+        title="Search to add"
         bullets={[
-          "Same flow as B — search keeps checkboxes, picking clears the search and returns to the default view",
-          "Touched people stay in \"Recently selected\" so you can re-toggle without searching again",
-          "Unchecked names in Recent show an X to remove them for good — checked ones can't be removed until unchecked",
-          "Nothing applies until you click Apply",
+          "Defaults to Me, Direct Reports, and Subordinates, all selected",
+          "Search to find and add a specific person",
+          "Added people stay in the list, no need to search again",
+          "Applies instantly — no confirm step",
         ]}
       >
-        <FilterBadgeF />
+        <FilterBadge />
       </Option>
 
       <Option
-        number="E"
-        title="Compact recent list, dismiss with X"
+        number="B"
+        title="Search to add, jump back on select"
         bullets={[
-          "No full roster — just Anyone, the 3 scopes, and a \"Recent\" list (A–Z, not by recency)",
-          "Search is add-only; picking someone adds them to Recent and clears the search",
-          "Unchecked names in Recent show an X to remove them for good — checked ones can't be removed until unchecked",
-          "Nothing applies until you click Apply",
+          "Same as A, but picking a person clears the search and returns to the default view",
+          "People you've picked stay listed so you can re-toggle them without searching again",
+          "Applies instantly — no confirm step",
         ]}
       >
-        <FilterBadgeE />
-      </Option>
-
-      <Option
-        number="D"
-        title="All names, alphabetical, pinned selected"
-        bullets={[
-          "Full list always visible — scroll or search to find someone",
-          "Selected names pin to the top (A–Z), everyone else sits below (A–Z) — order never shuffles while open",
-          "Search is add-only (no checkboxes); picking someone clears the search",
-          "Nothing applies until you click Apply",
-        ]}
-      >
-        <FilterBadgeD />
+        <FilterBadgeB />
       </Option>
 
       <Option
@@ -135,28 +121,42 @@ export default function App() {
       </Option>
 
       <Option
-        number="B"
-        title="Search to add, jump back on select"
+        number="D"
+        title="All names, alphabetical, pinned selected"
         bullets={[
-          "Same as A, but picking a person clears the search and returns to the default view",
-          "People you've picked stay listed so you can re-toggle them without searching again",
-          "Applies instantly — no confirm step",
+          "Full list always visible — scroll or search to find someone",
+          "Selected names pin to the top (A–Z), everyone else sits below (A–Z) — order never shuffles while open",
+          "Search is add-only (no checkboxes); picking someone clears the search",
+          "Nothing applies until you click Apply",
         ]}
       >
-        <FilterBadgeB />
+        <FilterBadgeD />
       </Option>
 
       <Option
-        number="A"
-        title="Search to add"
+        number="E"
+        title="Compact recent list, dismiss with X"
         bullets={[
-          "Defaults to Me, Direct Reports, and Subordinates, all selected",
-          "Search to find and add a specific person",
-          "Added people stay in the list, no need to search again",
-          "Applies instantly — no confirm step",
+          "No full roster — just Anyone, the 3 scopes, and a \"Recent\" list (A–Z, not by recency)",
+          "Search is add-only; picking someone adds them to Recent and clears the search",
+          "Unchecked names in Recent show an X to remove them for good — checked ones can't be removed until unchecked",
+          "Nothing applies until you click Apply",
         ]}
       >
-        <FilterBadge />
+        <FilterBadgeE />
+      </Option>
+
+      <Option
+        number="F"
+        title="Search to add, jump back on select, confirm with Apply"
+        bullets={[
+          "Same flow as B — search keeps checkboxes, picking clears the search and returns to the default view",
+          "Touched people stay in \"Recently selected\" so you can re-toggle without searching again",
+          "Unchecked names in Recent show an X to remove them for good — checked ones can't be removed until unchecked",
+          "Nothing applies until you click Apply",
+        ]}
+      >
+        <FilterBadgeF />
       </Option>
 
       <div style={{ height: 600, display: "flex", alignItems: "flex-end", paddingBottom: 40 }}>

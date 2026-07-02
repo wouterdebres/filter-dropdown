@@ -86,10 +86,8 @@ export default function App() {
         number="A"
         title="Search to add"
         bullets={[
-          "Defaults to Me, Direct Reports, and Subordinates, all selected",
-          "Search to find and add a specific person",
-          "Added people stay in the list, no need to search again",
-          "Applies instantly — no confirm step",
+          "Search adds a person; Me / Direct Reports / Subordinates start fully checked",
+          "Applies instantly, no confirm step",
         ]}
       >
         <FilterBadge />
@@ -99,9 +97,8 @@ export default function App() {
         number="B"
         title="Search to add, jump back on select"
         bullets={[
-          "Same as A, but picking a person clears the search and returns to the default view",
-          "People you've picked stay listed so you can re-toggle them without searching again",
-          "Applies instantly — no confirm step",
+          "Same as A, but picking someone clears the search and jumps back to the default view instead of staying in the results",
+          "Applies instantly, no confirm step",
         ]}
       >
         <FilterBadgeB />
@@ -111,10 +108,9 @@ export default function App() {
         number="C"
         title="All names visible, confirm with Apply"
         bullets={[
-          "Full list always visible — scroll or search to find someone",
-          "Picking a name clears the search but keeps the list open",
-          "Recently selected people float to the top next time you open it",
-          "Nothing applies until you click Apply",
+          "Unlike A/B, the full name list is always visible, not just via search",
+          "Recently picked names float to the top the next time you open it",
+          "First option to require Apply — nothing applies until you click it",
         ]}
       >
         <FilterBadgeV2 />
@@ -124,10 +120,9 @@ export default function App() {
         number="D"
         title="All names, alphabetical, pinned selected"
         bullets={[
-          "Full list always visible — scroll or search to find someone",
-          "Selected names pin to the top (A–Z), everyone else sits below (A–Z) — order never shuffles while open",
-          "Search is add-only (no checkboxes); picking someone clears the search",
-          "Nothing applies until you click Apply",
+          "Like C, full list always visible — but strictly alphabetical, not recency-based",
+          "Selected names pin to the top (A–Z) instead of floating around; order holds steady while open",
+          "Requires Apply, like C",
         ]}
       >
         <FilterBadgeD />
@@ -137,10 +132,9 @@ export default function App() {
         number="E"
         title="Compact recent list, dismiss with X"
         bullets={[
-          "No full roster — just Anyone, the 3 scopes, and a \"Recent\" list (A–Z, not by recency)",
-          "Search is add-only; picking someone adds them to Recent and clears the search",
-          "Unchecked names in Recent show an X to remove them for good — checked ones can't be removed until unchecked",
-          "Nothing applies until you click Apply",
+          "Unlike C/D, there's no full list — just Anyone, the 3 scopes, and a short alphabetical \"Recent\" list",
+          "Search only adds (no checkboxes); to drop someone you dismiss them from Recent with an X, not from search",
+          "Requires Apply",
         ]}
       >
         <FilterBadgeE />
@@ -150,10 +144,9 @@ export default function App() {
         number="F"
         title="Search to add, jump back on select, confirm with Apply"
         bullets={[
-          "Same flow as B — search keeps checkboxes, picking clears the search and returns to the default view",
-          "Touched people stay in \"Recently selected\" so you can re-toggle without searching again",
-          "Unchecked names in Recent show an X to remove them for good — checked ones can't be removed until unchecked",
-          "Nothing applies until you click Apply",
+          "Same search/recent mechanics as B: checkboxes in search, Recent ordered by when you touched each person (not alphabetical, unlike E)",
+          "Unlike E, you can check or uncheck people right from search — no need to visit Recent to remove someone",
+          "The one change from B: requires Apply",
         ]}
       >
         <FilterBadgeF />

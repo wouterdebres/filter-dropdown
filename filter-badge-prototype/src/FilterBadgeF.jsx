@@ -1,5 +1,23 @@
 import React, { useState, useRef, useEffect } from "react";
 
+/* ------------------------------------------------------------------ *
+ *  Option F — Option B's search-and-jump-back flow, with an explicit
+ *  Apply button instead of instant apply.
+ *
+ *  Same model as B:
+ *  - Search results keep checkboxes (toggle either way), unlike D/E.
+ *  - Picking or removing a person clears the search and jumps back to
+ *    the default view; people you've touched are remembered in
+ *    "recents" (in the order you touched them) so you can re-toggle
+ *    them without searching again.
+ *  - Anyone is a true select-all: checking it selects the scopes plus
+ *    every listed name; unchecking it clears the whole list.
+ *
+ *  What's different from B: nothing applies until you click Apply.
+ *  Opening the dropdown, checking/unchecking boxes, and searching all
+ *  edit a pending draft; closing without applying discards it.
+ * ------------------------------------------------------------------ */
+
 const PEOPLE = [
   { id: "maria", name: "Maria Chévario" },
   { id: "marjorie", name: "Marjorie Black" },
@@ -65,7 +83,7 @@ function Box({ checked }) {
 
 function Row({ checked, label, onClick }) {
   return (
-    <button type="button" className="fb2-row" onClick={onClick} style={{
+    <button type="button" className="fbf-row" onClick={onClick} style={{
       display: "flex", alignItems: "center", gap: 12, width: "100%",
       padding: "10px 8px", border: "none", background: "transparent",
       cursor: "pointer", textAlign: "left", font: "inherit",
@@ -77,55 +95,95 @@ function Row({ checked, label, onClick }) {
   );
 }
 
+// Recent rows can be checked/unchecked. Unchecked ones can be dismissed
+// from the Recent list entirely via an always-visible X — they're still
+// findable through search afterward. Checked (active) people can't be
+// dismissed this way — uncheck first, then remove.
+function RecentRow({ checked, label, onToggle, onDismiss }) {
+  return (
+    <div className="fbf-recentrow" style={{
+      display: "flex", alignItems: "center", gap: 12, width: "100%",
+      padding: "10px 8px", borderRadius: 6, cursor: "pointer",
+    }}>
+      <button type="button" onClick={onToggle} style={{
+        display: "flex", alignItems: "center", gap: 12, flex: 1, minWidth: 0,
+        border: "none", background: "transparent", cursor: "pointer",
+        textAlign: "left", font: "inherit", color: C.ink, fontSize: 15,
+        fontWeight: 500, padding: 0,
+      }}>
+        <Box checked={checked} />
+        <span style={{ lineHeight: 1.2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{label}</span>
+      </button>
+      {!checked && (
+        <button type="button" className="fbf-dismiss" aria-label={`Remove ${label} from recent`}
+          onClick={onDismiss} style={{
+            flex: "0 0 auto", width: 22, height: 22, borderRadius: 6,
+            border: "none", background: "transparent", cursor: "pointer",
+            display: "grid", placeItems: "center", color: C.placeholder,
+          }}>
+          <XIcon size={14} strokeWidth={2.5} />
+        </button>
+      )}
+    </div>
+  );
+}
+
 const INITIAL_SCOPES = { me: true, dr: true, sub: true };
 const INITIAL_SELECTED = PEOPLE.map((p) => p.id);
+const INITIAL_RECENTS = [];
 
 function scopesEqual(a, b) {
   return a.me === b.me && a.dr === b.dr && a.sub === b.sub;
 }
+function sameSet(a, b) {
+  return a.length === b.length && a.every((x) => b.includes(x));
+}
 
-export default function FilterBadgeV2() {
+export default function FilterBadgeF() {
   const [open, setOpen] = useState(false);
   const [scopes, setScopes] = useState(INITIAL_SCOPES);
   const [selected, setSelected] = useState(INITIAL_SELECTED);
-  const [recents, setRecents] = useState([]);
+  const [recents, setRecents] = useState(INITIAL_RECENTS);
 
-  // Pending state (what's shown in the open dropdown, not yet applied)
   const [pendingScopes, setPendingScopes] = useState(INITIAL_SCOPES);
   const [pendingSelected, setPendingSelected] = useState(INITIAL_SELECTED);
-  const [pendingRecents, setPendingRecents] = useState([]);
+  const [pendingRecents, setPendingRecents] = useState(INITIAL_RECENTS);
   const [query, setQuery] = useState("");
 
   const wrapRef = useRef(null);
   const searchRef = useRef(null);
 
+  const anyone =
+    scopes.me && scopes.dr && scopes.sub &&
+    PEOPLE.every((p) => selected.includes(p.id));
+  const nothing =
+    !scopes.me && !scopes.dr && !scopes.sub && selected.length === 0;
+
   const pendingAnyone =
     pendingScopes.me && pendingScopes.dr && pendingScopes.sub &&
-    PEOPLE.every((p) => pendingSelected.includes(p.id)) &&
-    pendingSelected.length === PEOPLE.length;
-  const pendingNothing =
-    !pendingScopes.me && !pendingScopes.dr && !pendingScopes.sub &&
-    pendingSelected.length === 0;
+    PEOPLE.every((p) => pendingSelected.includes(p.id));
 
   const isDirty =
     !scopesEqual(pendingScopes, scopes) ||
-    pendingSelected.length !== selected.length ||
-    pendingSelected.some((id) => !selected.includes(id));
+    !sameSet(pendingSelected, selected) ||
+    !sameSet(pendingRecents, recents);
+
+  function resetPending() {
+    setPendingScopes(scopes);
+    setPendingSelected(selected);
+    setPendingRecents(recents);
+  }
 
   useEffect(() => {
     function onDown(e) {
       if (wrapRef.current && !wrapRef.current.contains(e.target)) {
-        setPendingScopes(scopes);
-        setPendingSelected(selected);
-        setPendingRecents(recents);
+        resetPending();
         setOpen(false);
       }
     }
     function onKey(e) {
       if (e.key === "Escape") {
-        setPendingScopes(scopes);
-        setPendingSelected(selected);
-        setPendingRecents(recents);
+        resetPending();
         setOpen(false);
       }
     }
@@ -135,13 +193,10 @@ export default function FilterBadgeV2() {
       document.removeEventListener("mousedown", onDown);
       document.removeEventListener("keydown", onKey);
     };
-  }, [scopes, selected]);
+  }, [scopes, selected, recents]);
 
-  // Sync pending to committed when opening
   function openDropdown() {
-    setPendingScopes(scopes);
-    setPendingSelected(selected);
-    setPendingRecents(recents);
+    resetPending();
     setQuery("");
     setOpen(true);
     setTimeout(() => searchRef.current && searchRef.current.focus(), 30);
@@ -150,19 +205,13 @@ export default function FilterBadgeV2() {
   function apply() {
     setScopes(pendingScopes);
     setSelected(pendingSelected);
-    // Add newly selected people to the front of recents, preserve existing order
-    setRecents((prev) => {
-      const newlyAdded = pendingSelected.filter((id) => !prev.includes(id));
-      return [...newlyAdded, ...prev];
-    });
+    setRecents(pendingRecents);
     setOpen(false);
   }
 
   const name = (id) => (PEOPLE.find((p) => p.id === id) || {}).name || id;
 
   function badgeLabel() {
-    const anyone = scopes.me && scopes.dr && scopes.sub && PEOPLE.every((p) => selected.includes(p.id));
-    const nothing = !scopes.me && !scopes.dr && !scopes.sub && selected.length === 0;
     if (anyone) return "Anyone";
     if (nothing) return "None";
     const parts = [];
@@ -176,6 +225,7 @@ export default function FilterBadgeV2() {
     if (pendingAnyone) {
       setPendingScopes({ me: false, dr: false, sub: false });
       setPendingSelected([]);
+      setPendingRecents([]);
     } else {
       setPendingScopes({ me: true, dr: true, sub: true });
       setPendingSelected(PEOPLE.map((p) => p.id));
@@ -184,38 +234,57 @@ export default function FilterBadgeV2() {
 
   function toggleScope(key) {
     setPendingScopes((prev) => ({ ...prev, [key]: !prev[key] }));
-    // Stepping out of "Anyone" via a scope — the specific names were only
-    // selected as a byproduct of Anyone, not a real pick, so clear them.
-    if (pendingAnyone) setPendingSelected([]);
+    // Stepping out of "Anyone" via a scope — everyone was only "selected"
+    // as a byproduct of Anyone, not a real pick, so drop them. Exception:
+    // anyone already sitting in Recent is a real, visible pick and should
+    // stay checked. Don't flood Recent with the rest of the roster.
+    if (pendingAnyone) {
+      setPendingSelected((prev) => prev.filter((id) => pendingRecents.includes(id)));
+    }
   }
 
   function togglePerson(id) {
-    const isRemoving = pendingSelected.includes(id);
-    setPendingSelected((prev) =>
-      isRemoving ? prev.filter((x) => x !== id) : [...prev, id]
-    );
-    if (!isRemoving) {
+    if (pendingSelected.includes(id)) {
+      if (pendingAnyone) setPendingRecents(PEOPLE.map((p) => p.id));
+      setPendingSelected((prev) => prev.filter((x) => x !== id));
       setQuery("");
       searchRef.current && searchRef.current.focus();
+      return;
     }
+    setPendingRecents((prev) => (prev.includes(id) ? prev : [...prev, id]));
+    setPendingSelected((prev) => [...prev, id]);
+    setQuery("");
+    searchRef.current && searchRef.current.focus();
   }
+
+  function dismissFromRecent(id) {
+    setPendingRecents((prev) => prev.filter((x) => x !== id));
+  }
+
+  const q = query.trim().toLowerCase();
+  const searching = q.length > 0;
+  const results = PEOPLE.filter((p) => p.name.toLowerCase().includes(q));
+  const recentPeople = pendingRecents
+    .map((id) => PEOPLE.find((p) => p.id === id))
+    .filter(Boolean);
 
   return (
     <div ref={wrapRef} style={{ position: "relative", width: 300 }}>
       <style>{`
-        .fb2-panel { animation: fb2Pop .14s cubic-bezier(.2,.8,.3,1); transform-origin: top left; }
-        @keyframes fb2Pop { from { opacity: 0; transform: translateY(-4px) scale(.985); } to { opacity: 1; transform: none; } }
-        .fb2-row:hover { background: ${C.rowHover}; }
-        .fb2-row:focus-visible { outline: 2px solid ${C.check}; outline-offset: -2px; border-radius: 6px; }
-        .fb2-badge:focus-visible { outline: 2px solid ${C.caret}; outline-offset: 2px; }
-        .fb2-scroll::-webkit-scrollbar { width: 8px; }
-        .fb2-scroll::-webkit-scrollbar-thumb { background: #D7DDE8; border-radius: 8px; }
-        .fb2-search::placeholder { color: ${C.placeholder}; }
-        .fb2-search:focus { border-color: ${C.check}; box-shadow: 0 0 0 3px rgba(62,91,245,.13); }
-        @media (prefers-reduced-motion: reduce) { .fb2-panel { animation: none; } }
+        .fbf-panel { animation: fbfPop .14s cubic-bezier(.2,.8,.3,1); transform-origin: top left; }
+        @keyframes fbfPop { from { opacity: 0; transform: translateY(-4px) scale(.985); } to { opacity: 1; transform: none; } }
+        .fbf-row:hover { background: ${C.rowHover}; }
+        .fbf-row:focus-visible { outline: 2px solid ${C.check}; outline-offset: -2px; border-radius: 6px; }
+        .fbf-badge:focus-visible { outline: 2px solid ${C.caret}; outline-offset: 2px; }
+        .fbf-scroll::-webkit-scrollbar { width: 8px; }
+        .fbf-scroll::-webkit-scrollbar-thumb { background: #D7DDE8; border-radius: 8px; }
+        .fbf-search::placeholder { color: ${C.placeholder}; }
+        .fbf-search:focus { border-color: ${C.check}; box-shadow: 0 0 0 3px rgba(62,91,245,.13); }
+        .fbf-apply:disabled { background: #C7CCDA; cursor: default; }
+        @media (prefers-reduced-motion: reduce) { .fbf-panel { animation: none; } }
       `}</style>
 
-      <button type="button" className="fb2-badge" onClick={() => open ? (() => { setPendingScopes(scopes); setPendingSelected(selected); setOpen(false); })() : openDropdown()} style={{
+      <button type="button" className="fbf-badge" onClick={() => (open ? (resetPending(), setOpen(false)) : openDropdown())} style={{
         display: "inline-flex", alignItems: "center", gap: 8, maxWidth: "100%",
         padding: "9px 16px", borderRadius: 999, border: `1px solid ${C.badgeBorder}`,
         cursor: "pointer", background: open ? C.badgeBgHover : C.badgeBg,
@@ -232,12 +301,12 @@ export default function FilterBadgeV2() {
       </button>
 
       {open && (
-        <div className="fb2-panel" style={{
+        <div className="fbf-panel" style={{
           position: "absolute", top: "calc(100% + 8px)", left: 0, width: 300,
           background: "#fff", border: `1px solid ${C.cardBorder}`, borderRadius: 12,
           boxShadow: "0 12px 32px rgba(28,42,74,.13), 0 3px 8px rgba(28,42,74,.05)",
           overflow: "hidden", zIndex: 10, display: "flex", flexDirection: "column",
-          maxHeight: 400,
+          maxHeight: 420,
         }}>
           {/* Search */}
           <div style={{ padding: 8, flexShrink: 0 }}>
@@ -246,7 +315,7 @@ export default function FilterBadgeV2() {
                 position: "absolute", left: 12, top: "50%",
                 transform: "translateY(-50%)", pointerEvents: "none",
               }} />
-              <input ref={searchRef} className="fb2-search" value={query}
+              <input ref={searchRef} className="fbf-search" value={query}
                 onChange={(e) => setQuery(e.target.value)} placeholder="Search"
                 style={{
                   width: "100%", height: 32, boxSizing: "border-box",
@@ -254,7 +323,7 @@ export default function FilterBadgeV2() {
                   border: `1px solid ${C.border}`, fontSize: 14,
                   color: C.ink, outline: "none", font: "inherit", fontWeight: 500,
                 }} />
-              {query && (
+              {searching && (
                 <button type="button" aria-label="Clear search"
                   onClick={() => { setQuery(""); searchRef.current && searchRef.current.focus(); }}
                   style={{
@@ -271,61 +340,50 @@ export default function FilterBadgeV2() {
           <div style={{ height: 1, background: C.divider, flexShrink: 0 }} />
 
           {/* Scrollable content */}
-          <div className="fb2-scroll" style={{ overflowY: "auto", flex: 1, padding: "6px 0" }}>
-            {(() => {
-              const q = query.trim().toLowerCase();
-              const filteredPeople = PEOPLE.filter((p) => p.name.toLowerCase().includes(q));
-              if (q) {
-                return filteredPeople.length ? filteredPeople.map((p) => (
+          <div className="fbf-scroll" style={{ overflowY: "auto", flex: 1, padding: "6px 0" }}>
+            {searching ? (
+              results.length ? (
+                results.map((p) => (
                   <Row key={p.id} label={p.name}
                     checked={pendingSelected.includes(p.id)}
                     onClick={() => togglePerson(p.id)} />
-                )) : (
-                  <div style={{ padding: "12px 8px", fontSize: 14, color: C.placeholder }}>
-                    No people match "{query}".
-                  </div>
-                );
-              }
-              const recentPeople = pendingRecents
-                .map((id) => PEOPLE.find((p) => p.id === id))
-                .filter(Boolean);
-              const restPeople = PEOPLE.filter((p) => !pendingRecents.includes(p.id));
-              return (
-                <>
-                  <Row label="Anyone" checked={pendingAnyone} onClick={clickAnyone} />
-                  <div style={{ height: 1, background: C.divider, margin: "7px 0" }} />
-                  {SCOPES.map((s) => (
-                    <Row key={s.key} label={s.label}
-                      checked={pendingScopes[s.key]} onClick={() => toggleScope(s.key)} />
-                  ))}
-                  <div style={{ height: 1, background: C.divider, margin: "7px 0" }} />
-                  {recentPeople.map((p) => (
-                    <Row key={p.id} label={p.name}
-                      checked={pendingSelected.includes(p.id)}
-                      onClick={() => togglePerson(p.id)} />
-                  ))}
-                  {restPeople.map((p) => (
-                    <Row key={p.id} label={p.name}
-                      checked={pendingSelected.includes(p.id)}
-                      onClick={() => togglePerson(p.id)} />
-                  ))}
-                </>
-              );
-            })()}
+                ))
+              ) : (
+                <div style={{ padding: "12px 8px", fontSize: 14, color: C.placeholder }}>
+                  No people match "{query}".
+                </div>
+              )
+            ) : (
+              <>
+                <Row label="Anyone" checked={pendingAnyone} onClick={clickAnyone} />
+                <div style={{ height: 1, background: C.divider, margin: "7px 0" }} />
+                {SCOPES.map((s) => (
+                  <Row key={s.key} label={s.label}
+                    checked={pendingScopes[s.key]} onClick={() => toggleScope(s.key)} />
+                ))}
+                {recentPeople.length > 0 && (
+                  <>
+                    <div style={{ height: 1, background: C.divider, margin: "7px 0" }} />
+                    {recentPeople.map((p) => (
+                      <RecentRow key={p.id} label={p.name}
+                        checked={pendingSelected.includes(p.id)}
+                        onToggle={() => togglePerson(p.id)}
+                        onDismiss={() => dismissFromRecent(p.id)} />
+                    ))}
+                  </>
+                )}
+              </>
+            )}
           </div>
 
-          {/* Sticky Apply footer */}
-          {isDirty && (
-            <div style={{
-              padding: "10px 10px",
-              borderTop: `1px solid ${C.divider}`,
-              background: "#fff",
-            }}>
-              <button type="button" onClick={apply} style={{
+          {/* Apply footer — hidden while searching, disabled until dirty */}
+          {!searching && (
+            <div style={{ padding: "10px 10px", borderTop: `1px solid ${C.divider}`, background: "#fff" }}>
+              <button type="button" className="fbf-apply" onClick={apply} disabled={!isDirty} style={{
                 width: "100%", padding: "10px 0", borderRadius: 8,
-                border: "none", background: C.check, color: "#fff",
-                fontSize: 15, fontWeight: 700, cursor: "pointer",
-                letterSpacing: "-0.01em",
+                border: "none", background: isDirty ? C.check : "#C7CCDA",
+                color: "#fff", fontSize: 15, fontWeight: 700,
+                cursor: isDirty ? "pointer" : "default", letterSpacing: "-0.01em",
               }}>
                 Apply
               </button>

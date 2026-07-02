@@ -222,6 +222,13 @@ export default function FilterBadgeB() {
 
   function toggleScope(key) {
     setScopes((prev) => ({ ...prev, [key]: !prev[key] }));
+    // Stepping out of "Anyone" via a scope — the specific names were only
+    // selected as a byproduct of Anyone, not a real pick, so clear them
+    // (surfacing them in recents so they can still be re-picked).
+    if (anyone) {
+      setRecents(PEOPLE.map((p) => p.id));
+      setSelected([]);
+    }
   }
 
   function togglePerson(id) {

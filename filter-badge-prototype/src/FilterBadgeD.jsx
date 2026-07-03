@@ -356,8 +356,9 @@ export default function FilterBadgeD() {
           {!searching && (
             <div style={{ padding: "10px 10px", borderTop: `1px solid ${C.divider}`, background: "#fff" }}>
               <button type="button" className="fbd-apply" onClick={apply} disabled={!isDirty} style={{
-                width: "100%", padding: "10px 0", borderRadius: 8,
-                border: "none", background: isDirty ? C.check : "#C7CCDA",
+                width: "100%", height: 32, boxSizing: "border-box",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                borderRadius: 8, border: "none", background: isDirty ? C.check : "#C7CCDA",
                 color: "#fff", fontSize: 15, fontWeight: 700,
                 cursor: isDirty ? "pointer" : "default", letterSpacing: "-0.01em",
               }}>

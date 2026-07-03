@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 
+// 134 people, at least one per letter of the alphabet.
 const PEOPLE = [
   { id: "maria", name: "Maria Chévario" },
   { id: "marjorie", name: "Marjorie Black" },
@@ -10,7 +11,154 @@ const PEOPLE = [
   { id: "catherine", name: "Catherine Lee" },
   { id: "aisha", name: "Aisha Khan" },
   { id: "tom", name: "Tom Becker" },
+  { id: "adam", name: "Adam Fisher" },
+  { id: "alina", name: "Alina Petrova" },
+  { id: "amir", name: "Amir Nasser" },
+  { id: "anya", name: "Anya Volkov" },
+  { id: "arthur", name: "Arthur Bell" },
+  { id: "bianca", name: "Bianca Ortiz" },
+  { id: "benjamin", name: "Benjamin Cole" },
+  { id: "bruno", name: "Bruno Silva" },
+  { id: "bella", name: "Bella Hart" },
+  { id: "boris", name: "Boris Ivanov" },
+  { id: "carlos", name: "Carlos Mendez" },
+  { id: "chloe", name: "Chloe Dupont" },
+  { id: "caleb", name: "Caleb Young" },
+  { id: "camille", name: "Camille Laurent" },
+  { id: "cyrus", name: "Cyrus Bahrami" },
+  { id: "daniel", name: "Daniel Kim" },
+  { id: "dana", name: "Dana Whitfield" },
+  { id: "diego", name: "Diego Torres" },
+  { id: "daisy", name: "Daisy Wren" },
+  { id: "dmitri", name: "Dmitri Sokolov" },
+  { id: "elena", name: "Elena Rossi" },
+  { id: "ethan", name: "Ethan Brooks" },
+  { id: "emil", name: "Emil Karlsson" },
+  { id: "esther", name: "Esther Cohen" },
+  { id: "ezra", name: "Ezra Lindqvist" },
+  { id: "farah", name: "Farah Haddad" },
+  { id: "felix", name: "Felix Grant" },
+  { id: "fiona", name: "Fiona MacLeod" },
+  { id: "franco", name: "Franco Rinaldi" },
+  { id: "freya", name: "Freya Solberg" },
+  { id: "grace", name: "Grace Osei" },
+  { id: "gabriel", name: "Gabriel Novak" },
+  { id: "greta", name: "Greta Voss" },
+  { id: "gustavo", name: "Gustavo Pinto" },
+  { id: "giselle", name: "Giselle Moreau" },
+  { id: "hannah", name: "Hannah Byrne" },
+  { id: "hassan", name: "Hassan Ali" },
+  { id: "helena", name: "Helena Dvorak" },
+  { id: "hugo", name: "Hugo Estrada" },
+  { id: "hazel", name: "Hazel Whitmore" },
+  { id: "isabel", name: "Isabel Duarte" },
+  { id: "ivan", name: "Ivan Petrenko" },
+  { id: "ingrid", name: "Ingrid Halvorsen" },
+  { id: "idris", name: "Idris Bakare" },
+  { id: "iris", name: "Iris Chapman" },
+  { id: "jasmine", name: "Jasmine Wong" },
+  { id: "jorge", name: "Jorge Ramirez" },
+  { id: "julia", name: "Julia Renner" },
+  { id: "jonas", name: "Jonas Berg" },
+  { id: "jade", name: "Jade Okafor" },
+  { id: "karim", name: "Karim Farouk" },
+  { id: "kaitlyn", name: "Kaitlyn Moss" },
+  { id: "klaus", name: "Klaus Richter" },
+  { id: "keiko", name: "Keiko Sato" },
+  { id: "kwame", name: "Kwame Boateng" },
+  { id: "liam", name: "Liam Sullivan" },
+  { id: "lucia", name: "Lucia Fernandez" },
+  { id: "leah", name: "Leah Sorensen" },
+  { id: "leo", name: "Leo Marchetti" },
+  { id: "lena", name: "Lena Hoffmann" },
+  { id: "mateo", name: "Mateo Alvarez" },
+  { id: "nina", name: "Nina Kowalski" },
+  { id: "noah", name: "Noah Bennett" },
+  { id: "nadia", name: "Nadia Younes" },
+  { id: "nolan", name: "Nolan Shaw" },
+  { id: "naomi", name: "Naomi Adeyemi" },
+  { id: "omar", name: "Omar Siddiqui" },
+  { id: "olivia", name: "Olivia Turner" },
+  { id: "oscar", name: "Oscar Lindgren" },
+  { id: "odette", name: "Odette Girard" },
+  { id: "otto", name: "Otto Krueger" },
+  { id: "priya", name: "Priya Nair" },
+  { id: "patrick", name: "Patrick Doyle" },
+  { id: "paloma", name: "Paloma Reyes" },
+  { id: "peter", name: "Peter Lindholm" },
+  { id: "petra", name: "Petra Vogel" },
+  { id: "quentin", name: "Quentin Blake" },
+  { id: "quinn", name: "Quinn Alvarado" },
+  { id: "qadir", name: "Qadir Hussain" },
+  { id: "queenie", name: "Queenie Fontaine" },
+  { id: "quimby", name: "Quimby Larsen" },
+  { id: "rachel", name: "Rachel Donovan" },
+  { id: "ravi", name: "Ravi Chandran" },
+  { id: "renata", name: "Renata Kowalczyk" },
+  { id: "rory", name: "Rory Fitzgerald" },
+  { id: "rosalind", name: "Rosalind Achebe" },
+  { id: "sofia", name: "Sofia Bianchi" },
+  { id: "samuel", name: "Samuel Otieno" },
+  { id: "selin", name: "Selin Aydin" },
+  { id: "stefan", name: "Stefan Wozniak" },
+  { id: "sunita", name: "Sunita Rao" },
+  { id: "talia", name: "Talia Meyer" },
+  { id: "theo", name: "Theo Andersson" },
+  { id: "tatiana", name: "Tatiana Volkova" },
+  { id: "tariq", name: "Tariq Aziz" },
+  { id: "uma", name: "Uma Devi" },
+  { id: "ulric", name: "Ulric Bergman" },
+  { id: "ursula", name: "Ursula Fischer" },
+  { id: "uriel", name: "Uriel Santos" },
+  { id: "unathi", name: "Unathi Mokoena" },
+  { id: "victor", name: "Victor Castillo" },
+  { id: "valeria", name: "Valeria Costa" },
+  { id: "vera", name: "Vera Novikova" },
+  { id: "vince", name: "Vince Romano" },
+  { id: "violeta", name: "Violeta Marin" },
+  { id: "wei", name: "Wei Chen" },
+  { id: "willa", name: "Willa Fields" },
+  { id: "winston", name: "Winston Clarke" },
+  { id: "wren", name: "Wren Delgado" },
+  { id: "walid", name: "Walid Kassem" },
+  { id: "xiomara", name: "Xiomara Vega" },
+  { id: "xavier", name: "Xavier Lund" },
+  { id: "xiu", name: "Xiu Zhang" },
+  { id: "ximena", name: "Ximena Ortega" },
+  { id: "xander", name: "Xander Brandt" },
+  { id: "yusuf", name: "Yusuf Demir" },
+  { id: "yara", name: "Yara Salim" },
+  { id: "yuki", name: "Yuki Tanaka" },
+  { id: "yosef", name: "Yosef Katz" },
+  { id: "yvonne", name: "Yvonne Dubois" },
+  { id: "zoe", name: "Zoe Harrington" },
+  { id: "zachary", name: "Zachary Whitman" },
+  { id: "zara", name: "Zara Malik" },
+  { id: "ziad", name: "Ziad Farah" },
+  { id: "zola", name: "Zola Ndlovu" },
 ];
+
+// Org mapping: 10 people report directly to you; "My Subordinates" is the
+// broader org under you, so it includes those same 10 plus 20 more —
+// checking it should surface all 30 as selected.
+const DIRECT_REPORT_IDS = [
+  "maria", "brian", "catherine", "daniel", "elena",
+  "farah", "grace", "hannah", "isabel", "jasmine",
+];
+const SUBORDINATE_ONLY_IDS = [
+  "karim", "liam", "mateo", "nina", "omar",
+  "priya", "quentin", "rachel", "sofia", "talia",
+  "uma", "victor", "wei", "xiomara", "yusuf",
+  "zoe", "adam", "bianca", "carlos", "diego",
+];
+const SUBORDINATE_IDS = [...DIRECT_REPORT_IDS, ...SUBORDINATE_ONLY_IDS];
+
+function scopeDerivedIds(scopes) {
+  const ids = new Set();
+  if (scopes.dr) DIRECT_REPORT_IDS.forEach((id) => ids.add(id));
+  if (scopes.sub) SUBORDINATE_IDS.forEach((id) => ids.add(id));
+  return ids;
+}
 
 const SCOPES = [
   { key: "me", label: "Me" },
@@ -183,10 +331,32 @@ export default function FilterBadgeV2() {
   }
 
   function toggleScope(key) {
-    setPendingScopes((prev) => ({ ...prev, [key]: !prev[key] }));
-    // Stepping out of "Anyone" via a scope — the specific names were only
-    // selected as a byproduct of Anyone, not a real pick, so clear them.
-    if (pendingAnyone) setPendingSelected([]);
+    const nextScopes = { ...pendingScopes, [key]: !pendingScopes[key] };
+    setPendingScopes(nextScopes);
+
+    if (pendingAnyone) {
+      // Stepping out of full "Anyone" — collapse everyone down to just
+      // what the remaining scopes (Direct Reports / Subordinates) and
+      // Recent still cover, instead of leaving every name phantom-checked.
+      const covered = scopeDerivedIds(nextScopes);
+      setPendingSelected((prev) =>
+        prev.filter((id) => covered.has(id) || pendingRecents.includes(id))
+      );
+      return;
+    }
+
+    if (key === "dr" || key === "sub") {
+      // Direct Reports and Subordinates overlap (subordinates includes
+      // direct reports) — recompute from old vs. new coverage so toggling
+      // one doesn't drop names still covered by the other.
+      const oldIds = scopeDerivedIds(pendingScopes);
+      const newIds = scopeDerivedIds(nextScopes);
+      setPendingSelected((prev) => {
+        const kept = prev.filter((id) => !oldIds.has(id) || newIds.has(id));
+        const toAdd = [...newIds].filter((id) => !kept.includes(id));
+        return [...kept, ...toAdd];
+      });
+    }
   }
 
   function togglePerson(id) {
@@ -212,6 +382,7 @@ export default function FilterBadgeV2() {
         .fb2-scroll::-webkit-scrollbar-thumb { background: #D7DDE8; border-radius: 8px; }
         .fb2-search::placeholder { color: ${C.placeholder}; }
         .fb2-search:focus { border-color: ${C.check}; box-shadow: 0 0 0 3px rgba(62,91,245,.13); }
+        .fb2-apply:disabled { background: #C7CCDA; cursor: default; }
         @media (prefers-reduced-motion: reduce) { .fb2-panel { animation: none; } }
       `}</style>
 
@@ -314,23 +485,22 @@ export default function FilterBadgeV2() {
             })()}
           </div>
 
-          {/* Sticky Apply footer */}
-          {isDirty && (
-            <div style={{
-              padding: "10px 10px",
-              borderTop: `1px solid ${C.divider}`,
-              background: "#fff",
+          {/* Apply footer — always visible, disabled until dirty */}
+          <div style={{
+            padding: "10px 10px",
+            borderTop: `1px solid ${C.divider}`,
+            background: "#fff",
+          }}>
+            <button type="button" className="fb2-apply" onClick={apply} disabled={!isDirty} style={{
+              width: "100%", height: 32, boxSizing: "border-box",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              borderRadius: 8, border: "none", background: isDirty ? C.check : "#C7CCDA",
+              color: "#fff", fontSize: 15, fontWeight: 700,
+              cursor: isDirty ? "pointer" : "default", letterSpacing: "-0.01em",
             }}>
-              <button type="button" onClick={apply} style={{
-                width: "100%", padding: "10px 0", borderRadius: 8,
-                border: "none", background: C.check, color: "#fff",
-                fontSize: 15, fontWeight: 700, cursor: "pointer",
-                letterSpacing: "-0.01em",
-              }}>
-                Apply
-              </button>
-            </div>
-          )}
+              Apply
+            </button>
+          </div>
         </div>
       )}
     </div>

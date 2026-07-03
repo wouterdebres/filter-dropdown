@@ -5,6 +5,7 @@ import FilterBadgeV2 from "./FilterBadgeV2.jsx";
 import FilterBadgeD from "./FilterBadgeD.jsx";
 import FilterBadgeE from "./FilterBadgeE.jsx";
 import FilterBadgeF from "./FilterBadgeF.jsx";
+import FilterBadgeG from "./FilterBadgeG.jsx";
 
 const C = {
   pageBg: "#F3F6FB",
@@ -83,49 +84,29 @@ export default function App() {
       </div>
 
       <Option
-        number="A"
-        title="Search to add"
+        number="G"
+        title="Like C, but search starts fresh from Anyone"
         bullets={[
-          "Search adds a person; Me / Direct Reports / Subordinates start fully checked",
-          "Applies instantly, no confirm step",
+          "Based on C: full list always visible, requires Apply",
+          "Search results are a plain list, no checkboxes",
+          "With Anyone active, picking someone from search starts a new query: everyone deselects and only that person stays",
+          "A picked person jumps to the top of the list, checked — no need to reopen first (unlike C)",
+          "Me / Direct Reports / Subordinates behave exactly as in C",
         ]}
       >
-        <FilterBadge />
+        <FilterBadgeG />
       </Option>
 
       <Option
-        number="B"
-        title="Search to add, jump back on select"
+        number="F"
+        title="Search to add, jump back on select, confirm with Apply"
         bullets={[
-          "Same as A, but picking someone clears the search and jumps back to the default view instead of staying in the results",
-          "Applies instantly, no confirm step",
+          "Same search/recent mechanics as B: checkboxes in search, Recent ordered by when you touched each person (not alphabetical, unlike E)",
+          "Unlike E, you can check or uncheck people right from search — no need to visit Recent to remove someone",
+          "The one change from B: requires Apply",
         ]}
       >
-        <FilterBadgeB />
-      </Option>
-
-      <Option
-        number="C"
-        title="All names visible, confirm with Apply"
-        bullets={[
-          "Unlike A/B, the full name list is always visible, not just via search",
-          "Recently picked names float to the top the next time you open it",
-          "First option to require Apply — nothing applies until you click it",
-        ]}
-      >
-        <FilterBadgeV2 />
-      </Option>
-
-      <Option
-        number="D"
-        title="All names, alphabetical, pinned selected"
-        bullets={[
-          "Like C, full list always visible — but strictly alphabetical, not recency-based",
-          "Selected names pin to the top (A–Z) instead of floating around; order holds steady while open",
-          "Requires Apply, like C",
-        ]}
-      >
-        <FilterBadgeD />
+        <FilterBadgeF />
       </Option>
 
       <Option
@@ -141,15 +122,49 @@ export default function App() {
       </Option>
 
       <Option
-        number="F"
-        title="Search to add, jump back on select, confirm with Apply"
+        number="D"
+        title="All names, alphabetical, pinned selected"
         bullets={[
-          "Same search/recent mechanics as B: checkboxes in search, Recent ordered by when you touched each person (not alphabetical, unlike E)",
-          "Unlike E, you can check or uncheck people right from search — no need to visit Recent to remove someone",
-          "The one change from B: requires Apply",
+          "Like C, full list always visible — but strictly alphabetical, not recency-based",
+          "Selected names pin to the top (A–Z) instead of floating around; order holds steady while open",
+          "Requires Apply, like C",
         ]}
       >
-        <FilterBadgeF />
+        <FilterBadgeD />
+      </Option>
+
+      <Option
+        number="C"
+        title="All names visible, confirm with Apply"
+        bullets={[
+          "Unlike A/B, the full name list is always visible, not just via search",
+          "Recently picked names float to the top the next time you open it",
+          "First option to require Apply — nothing applies until you click it",
+        ]}
+      >
+        <FilterBadgeV2 />
+      </Option>
+
+      <Option
+        number="B"
+        title="Search to add, jump back on select"
+        bullets={[
+          "Same as A, but picking someone clears the search and jumps back to the default view instead of staying in the results",
+          "Applies instantly, no confirm step",
+        ]}
+      >
+        <FilterBadgeB />
+      </Option>
+
+      <Option
+        number="A"
+        title="Search to add"
+        bullets={[
+          "Search adds a person; Me / Direct Reports / Subordinates start fully checked",
+          "Applies instantly, no confirm step",
+        ]}
+      >
+        <FilterBadge />
       </Option>
 
       <div style={{ height: 600, display: "flex", alignItems: "flex-end", paddingBottom: 40 }}>
